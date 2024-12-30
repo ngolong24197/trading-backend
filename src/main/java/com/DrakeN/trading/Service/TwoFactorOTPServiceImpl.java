@@ -14,12 +14,11 @@ public class TwoFactorOTPServiceImpl implements TwoFactorOtpService {
 
 
 
-    @Autowired
-    private TwoFactorOTPRepository twoFactorOTPRepository;
+    private final TwoFactorOTPRepository twoFactorOTPRepository;
 
-//    public TwoFactorOTPServiceImpl(TwoFactorOTPRepository twoFactorOTPRepository) {
-//        this.twoFactorOTPRepository = twoFactorOTPRepository;
-//    }
+    public TwoFactorOTPServiceImpl(TwoFactorOTPRepository twoFactorOTPRepository) {
+        this.twoFactorOTPRepository = twoFactorOTPRepository;
+    }
 
     @Override
     public TwoFactorOTP createTwoFactorOtp(User user, String otp, String jwt) {
