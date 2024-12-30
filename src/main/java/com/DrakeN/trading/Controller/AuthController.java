@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import com.DrakeN.trading.Configuration.JwtProvider;
 import com.DrakeN.trading.Enitty.User;
 import com.DrakeN.trading.Repository.UserRepository;
-import com.DrakeN.trading.Response.AuthResponse;
+import com.DrakeN.trading.Response.Response.AuthResponse;
 import com.DrakeN.trading.Service.CustomUserDetailsService;
 
 

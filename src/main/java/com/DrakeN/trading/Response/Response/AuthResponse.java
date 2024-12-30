@@ -1,4 +1,4 @@
-package com.DrakeN.trading.Response;
+package com.DrakeN.trading.Response.Response;
 
 import lombok.Data;
 

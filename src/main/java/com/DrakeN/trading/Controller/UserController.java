@@ -2,15 +2,24 @@
 
 
     import com.DrakeN.trading.Domain.VerificationType;
+    import com.DrakeN.trading.Enitty.ForgotPasswordToken;
     import com.DrakeN.trading.Enitty.User;
     import com.DrakeN.trading.Enitty.VerificationCode;
+    import com.DrakeN.trading.Response.Request.ResetPasswordRequest;
+    import com.DrakeN.trading.Response.Response.ApiResponse;
+    import com.DrakeN.trading.Response.Response.AuthResponse;
+    import com.DrakeN.trading.Response.Request.ForgotPasswordRequest;
     import com.DrakeN.trading.Service.EmailService;
+    import com.DrakeN.trading.Service.ForgotPasswordService;
     import com.DrakeN.trading.Service.UserService;
     import com.DrakeN.trading.Service.VerificationCodeService;
-    import org.springframework.beans.factory.annotation.Autowired;
+    import com.DrakeN.trading.Ulti.otpUltis;
+
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
+
+    import java.util.UUID;
 
     @RestController
     @RequestMapping("/api/user")
@@ -21,15 +30,17 @@
 
 
         private final EmailService emailService;
+        private final ForgotPasswordService forgotPasswordService;
 
 
         private final VerificationCodeService verificationCodeService;
 
-        private String jwt;
 
-        public UserController(UserService userService, EmailService emailService, VerificationCodeService verificationCodeService) {
+
+        public UserController(UserService userService, EmailService emailService, ForgotPasswordService forgotPasswordService, VerificationCodeService verificationCodeService) {
             this.userService = userService;
             this.emailService = emailService;
+            this.forgotPasswordService = forgotPasswordService;
             this.verificationCodeService = verificationCodeService;
         }
 
@@ -77,4 +88,48 @@
 
 
         }
+
+        @PostMapping("/reset-password/send-otp")
+        public ResponseEntity<AuthResponse> sendResetPasswordToken(@RequestBody ForgotPasswordRequest request) throws Exception {
+
+            User user = userService.findUserByEmail(request.getSendTo());
+            String otp= otpUltis.generateOtp();
+            UUID uuid = UUID.randomUUID();
+            String id = uuid.toString();
+            ForgotPasswordToken token = forgotPasswordService.findByUserId(user.getId());
+            if(token == null){
+                token = forgotPasswordService.createToken(user,id,otp,request.getType(), request.getSendTo());
+            }
+
+            if(request.getType().equals(VerificationType.EMAIL)){
+                emailService.sendVerficationOtpEmail(user.getEmail(), token.getOtp());
+            }
+
+            AuthResponse response = new AuthResponse();
+            response.setSession(token.getId());
+            response.setMessage("Password Reset token send successfully, please check your Email");
+
+
+
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @PatchMapping("/reset-password/verify-otp")
+        public ResponseEntity<ApiResponse> ResetPassword(@RequestHeader("Authorization") String jwt,@RequestParam String id, @RequestBody ResetPasswordRequest request) throws Exception {
+
+            ForgotPasswordToken verificationCode = forgotPasswordService.findById(id);
+            boolean isVerify = verificationCode.getOtp().equals(request.getOtp());
+            if(isVerify){
+                userService.updatePassword(verificationCode.getUser(),request.getPassword());
+                forgotPasswordService.deleteToken(verificationCode);
+                ApiResponse response = new ApiResponse();
+                response.setMessage("Password Reset successfully");
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            }
+
+            throw new Exception("Invalid Otp, please check your Email again for Otp");
+
+        }
+
     }
