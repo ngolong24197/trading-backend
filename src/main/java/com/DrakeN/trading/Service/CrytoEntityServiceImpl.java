@@ -82,7 +82,7 @@ public class CrytoEntityServiceImpl implements CrytoEntityService {
             ResponseEntity<String> response = restTemplate.exchange(url,org.springframework.http.HttpMethod.GET,entity,String.class);
             JsonNode root = objectMapper.readTree(response.getBody());
 
-            CryptoEntity cryptoEntity = objectMapper.treeToValue(root, CryptoEntity.class);
+            CryptoEntity cryptoEntity = new CryptoEntity();
             cryptoEntity.setId(root.get("id").asText());
             cryptoEntity.setName(root.get("name").asText());
             cryptoEntity.setSymbol(root.get("symbol").asText());
@@ -96,12 +96,12 @@ public class CrytoEntityServiceImpl implements CrytoEntityService {
             cryptoEntity.setTotalVolume(marketData.get("total_volume").get("usd").asLong());
             cryptoEntity.setHigh24h(marketData.get("high_24h").get("usd").asDouble());
             cryptoEntity.setLow24h(marketData.get("low_24h").get("usd").asDouble());
-            cryptoEntity.setPriceChange24h(marketData.get("price_change_24h").get("usd").asDouble());
-            cryptoEntity.setPriceChangePercentage24h(marketData.get("price_change_percentage_24h").get("usd").asDouble());
-            cryptoEntity.setMarketCapChange24h(marketData.get("market_cap_change_24h").get("usd").asDouble());
-            cryptoEntity.setMarketCapChangePercentage24h(marketData.get("market_cap_change_percentage_24h").get("usd").asDouble());
+                cryptoEntity.setPriceChange24h(marketData.get("price_change_24h").asDouble());
+            cryptoEntity.setPriceChangePercentage24h(marketData.get("price_change_percentage_24h").asDouble());
+            cryptoEntity.setMarketCapChange24h(marketData.get("market_cap_change_24h").asLong());
+            cryptoEntity.setMarketCapChangePercentage24h(marketData.get("market_cap_change_percentage_24h").asLong());
 
-            cryptoEntity.setTotalSupply(marketData.get("total_supply").get("usd").asDouble());
+            cryptoEntity.setTotalSupply(marketData.get("total_supply").asLong());
 
             cryptoEntityRepository.save(cryptoEntity);
 

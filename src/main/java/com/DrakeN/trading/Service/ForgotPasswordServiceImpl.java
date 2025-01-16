@@ -5,11 +5,13 @@ import com.DrakeN.trading.Enitty.ForgotPasswordToken;
 import com.DrakeN.trading.Enitty.User;
 import com.DrakeN.trading.Repository.ForgotPasswordRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 
 @Service
+@Transactional
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     private final ForgotPasswordRepository forgotPasswordRepository;

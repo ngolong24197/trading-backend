@@ -25,6 +25,7 @@ public class CryptoEntity {
 
 
     @JsonProperty("image")
+    @JsonIgnore
     private String image;
 
     @JsonProperty("current_price")
@@ -64,7 +65,7 @@ public class CryptoEntity {
     private double circulatingSupply;
 
     @JsonProperty("total_supply")
-    private Double totalSupply;
+    private Long totalSupply;
 
     @JsonProperty("max_supply")
     private Double maxSupply;
@@ -86,6 +87,9 @@ public class CryptoEntity {
     @JsonProperty("atl_date")
     private ZonedDateTime atlDate;
 
+    public void setTotalSupply(Long totalSupply) {
+        this.totalSupply = totalSupply;
+    }
 
     @JsonProperty("roi")
     @JsonIgnore
@@ -222,13 +226,6 @@ public class CryptoEntity {
         this.circulatingSupply = circulatingSupply;
     }
 
-    public Double getTotalSupply() {
-        return totalSupply;
-    }
-
-    public void setTotalSupply(Double totalSupply) {
-        this.totalSupply = totalSupply;
-    }
 
     public Double getMaxSupply() {
         return maxSupply;

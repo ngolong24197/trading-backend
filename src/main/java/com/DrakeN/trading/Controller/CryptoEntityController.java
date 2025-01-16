@@ -25,7 +25,7 @@ public class CryptoEntityController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<CryptoEntity>> getCoinList(@RequestParam("page") int page) throws Exception {
+    public ResponseEntity<List<CryptoEntity>> getCoinList(@RequestParam(name="page", required = false) int page) throws Exception {
         List<CryptoEntity> coins = cryptoEntityService.getCoinList(page);
         return new ResponseEntity<>(coins, HttpStatus.ACCEPTED);
 
@@ -61,8 +61,8 @@ public class CryptoEntityController {
         return ResponseEntity.ok(jsonNode);
     }
 
-    @GetMapping("/detail/{coinId}")
-    public ResponseEntity<JsonNode> getCoinDetails(@PathVariable String coinId) throws Exception {
+    @GetMapping("/details/{coinId}")
+    public ResponseEntity<JsonNode> getCoinDetails(@PathVariable("coinId") String coinId) throws Exception {
         String coins = cryptoEntityService.getCoinDetails(coinId);
         JsonNode jsonNode = objectMapper.readTree(coins);
         return ResponseEntity.ok(jsonNode);

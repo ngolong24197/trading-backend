@@ -17,4 +17,12 @@ public class TwoFactorAuth {
     public void setEnable(boolean enable) {
         isEnable = enable;
     }
+
+    public VerificationType getSendTo() {
+        return sendTo;
+    }
+
+    public void setSendTo(VerificationType sendTo) {
+        this.sendTo = sendTo;
+    }
 }

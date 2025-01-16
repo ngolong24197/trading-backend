@@ -22,7 +22,7 @@
     import java.util.UUID;
 
     @RestController
-    @RequestMapping("/api/user")
+    @RequestMapping("/user")
     public class UserController {
 
 
@@ -48,6 +48,12 @@
         @GetMapping("/profile")
         public ResponseEntity<User> getUserProfile(@RequestHeader("Authorization") String jwt) throws Exception {
             User user = userService.findUserProfileByJwt(jwt);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+
+        @GetMapping("/{userId}")
+        public ResponseEntity<User> getUserById(@PathVariable("userId") Long userId) throws Exception {
+            User user = userService.findUserById(userId);
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
 
@@ -99,10 +105,11 @@
             ForgotPasswordToken token = forgotPasswordService.findByUserId(user.getId());
             if(token == null){
                 token = forgotPasswordService.createToken(user,id,otp,request.getType(), request.getSendTo());
+
             }
 
             if(request.getType().equals(VerificationType.EMAIL)){
-                emailService.sendVerficationOtpEmail(user.getEmail(), token.getOtp());
+                emailService.sendVerficationOtpEmail(request.getSendTo(), token.getOtp());
             }
 
             AuthResponse response = new AuthResponse();

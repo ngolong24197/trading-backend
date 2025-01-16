@@ -1,8 +1,10 @@
 package com.DrakeN.trading.Controller;
 
 import com.DrakeN.trading.Enitty.TwoFactorOTP;
+import com.DrakeN.trading.Enitty.WatchList;
 import com.DrakeN.trading.Service.EmailService;
 import com.DrakeN.trading.Service.TwoFactorOtpService;
+import com.DrakeN.trading.Service.WatchListService;
 import com.DrakeN.trading.Ulti.otpUltis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,9 @@ public class AuthController {
     @Autowired
     private final EmailService emailService;
 
+    @Autowired
+    private WatchListService watchListService;
+
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> registerUser(@RequestBody User user) throws Exception {
@@ -59,7 +64,9 @@ public class AuthController {
         saveUser.setEmail(user.getEmail());
         saveUser.setPassword(user.getPassword());
 
-        User newUser = userRepository.save(saveUser);
+       User newUser =  userRepository.save(saveUser);
+       WatchList watchList = watchListService.createWatchList(newUser);
+
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -89,7 +96,7 @@ public class AuthController {
         User checkuser = userRepository.findByEmail(user.getEmail());
 
 
-        if (user.getTwoFactorAuth().isEnable()) {
+        if (checkuser.getTwoFactorAuth().isEnable()) {
             AuthResponse response = new AuthResponse();
             response.setMessage("Two-factor authentication required");
             response.setTwoFactorAuthEnabled(true);
