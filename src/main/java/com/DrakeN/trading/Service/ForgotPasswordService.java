@@ -8,9 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ForgotPasswordService {
 
 
-    ForgotPasswordToken createToken(User user, String id, String otp, VerificationType type, String sendTo);
-    ForgotPasswordToken findById(String id);
+    ForgotPasswordToken createToken(User user, String otp, String type, String sendTo);
+    ForgotPasswordToken findById(Long id);
     ForgotPasswordToken findByUserId(Long userId);
+
+    ForgotPasswordToken findByOtpAndSendTo(String otp, String email);
 
     void deleteToken(ForgotPasswordToken forgotPasswordToken);
 

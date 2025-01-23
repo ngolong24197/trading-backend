@@ -10,25 +10,26 @@ public class ForgotPasswordToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private Long id;
 
 
 
     @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     private String otp;
 
-    private VerificationType type;
+    private String type;
 
     //Mobile number or email address
     private String sendTo;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -48,11 +49,11 @@ public class ForgotPasswordToken {
         this.otp = otp;
     }
 
-    public VerificationType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(VerificationType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

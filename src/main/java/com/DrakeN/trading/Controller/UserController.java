@@ -15,10 +15,15 @@
     import com.DrakeN.trading.Service.VerificationCodeService;
     import com.DrakeN.trading.Ulti.otpUltis;
 
+    import jakarta.persistence.EntityManager;
+    import jakarta.persistence.PersistenceContext;
+    import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
+    import org.springframework.transaction.annotation.Transactional;
     import org.springframework.web.bind.annotation.*;
 
+    import java.util.List;
     import java.util.UUID;
 
     @RestController
@@ -30,17 +35,21 @@
 
 
         private final EmailService emailService;
-        private final ForgotPasswordService forgotPasswordService;
+        @Autowired
+        private ForgotPasswordService forgotPasswordService;
 
 
         private final VerificationCodeService verificationCodeService;
+
+        @PersistenceContext
+        private EntityManager entityManager;
 
 
 
         public UserController(UserService userService, EmailService emailService, ForgotPasswordService forgotPasswordService, VerificationCodeService verificationCodeService) {
             this.userService = userService;
             this.emailService = emailService;
-            this.forgotPasswordService = forgotPasswordService;
+//            this.forgotPasswordService = forgotPasswordService;
             this.verificationCodeService = verificationCodeService;
         }
 
@@ -55,6 +64,12 @@
         public ResponseEntity<User> getUserById(@PathVariable("userId") Long userId) throws Exception {
             User user = userService.findUserById(userId);
             return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+
+        @GetMapping("/all")
+        public ResponseEntity<List<User>> getAllUsers() throws Exception {
+            List<User> userList = userService.findAllUsers();
+            return new ResponseEntity<>(userList, HttpStatus.OK);
         }
 
 
@@ -100,20 +115,19 @@
 
             User user = userService.findUserByEmail(request.getSendTo());
             String otp= otpUltis.generateOtp();
-            UUID uuid = UUID.randomUUID();
-            String id = uuid.toString();
+//            UUID uuid = UUID.randomUUID();
+//            String id = uuid.toString();
             ForgotPasswordToken token = forgotPasswordService.findByUserId(user.getId());
             if(token == null){
-                token = forgotPasswordService.createToken(user,id,otp,request.getType(), request.getSendTo());
-
+                token = forgotPasswordService.createToken(user,otp,request.getType(), request.getSendTo());
             }
 
-            if(request.getType().equals(VerificationType.EMAIL)){
-                emailService.sendVerficationOtpEmail(request.getSendTo(), token.getOtp());
+            if(request.getType().equals(VerificationType.EMAIL.name())){
+                emailService.sendVerficationOtpEmail(user.getEmail(), token.getOtp());
             }
 
             AuthResponse response = new AuthResponse();
-            response.setSession(token.getId());
+            response.setSession(token.getId().toString());
             response.setMessage("Password Reset token send successfully, please check your Email");
 
 
@@ -123,19 +137,20 @@
         }
 
         @PatchMapping("/reset-password/verify-otp")
-        public ResponseEntity<ApiResponse> ResetPassword(@RequestHeader("Authorization") String jwt,@RequestParam String id, @RequestBody ResetPasswordRequest request) throws Exception {
+        public ResponseEntity<ApiResponse> ResetPassword(  @RequestBody ResetPasswordRequest request) throws Exception {
 
-            ForgotPasswordToken verificationCode = forgotPasswordService.findById(id);
-            boolean isVerify = verificationCode.getOtp().equals(request.getOtp());
-            if(isVerify){
+            ForgotPasswordToken verificationCode = forgotPasswordService.findByOtpAndSendTo(request.getOtp(),request.getEmail());
+            if(verificationCode == null){
+                throw new Exception("Invalid Otp, please check your Email again for Otp");
+
+            }
                 userService.updatePassword(verificationCode.getUser(),request.getPassword());
                 forgotPasswordService.deleteToken(verificationCode);
                 ApiResponse response = new ApiResponse();
                 response.setMessage("Password Reset successfully");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
-            }
 
-            throw new Exception("Invalid Otp, please check your Email again for Otp");
+
 
         }
 

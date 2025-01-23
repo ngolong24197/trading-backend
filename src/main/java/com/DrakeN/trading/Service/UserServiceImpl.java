@@ -7,7 +7,9 @@ import com.DrakeN.trading.Enitty.User;
 import com.DrakeN.trading.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User findUserByEmail(String email) throws Exception {
         User user = userRepository.findByEmail(email);
         if(user == null) {
@@ -68,5 +71,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(newPassword);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
     }
 }

@@ -50,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
         order.setAmount(amount);
         order.setMethod(method);
         order.setUser(user);
-        order.setStatus(PAYMENT_ORDER_STATUS.PENDING);
+        order.setStatus(PAYMENT_ORDER_STATUS.PENDING); 
         return paymentRepository.save(order);
     }
 
@@ -169,8 +169,8 @@ public class PaymentServiceImpl implements PaymentService {
             SessionCreateParams params = SessionCreateParams.builder()
                     .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http://localhost:5173/wallet?order_id=" + orderId)
-                    .setCancelUrl("http://localhost:5173/payment/cancel")
+                    .setSuccessUrl("http://localhost:8080/wallet?order_id=" + orderId)
+                    .setCancelUrl("http://localhost:8080/payment/cancel")
                     .addLineItem(SessionCreateParams.LineItem.builder()
                             .setQuantity(1L)
                             .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
@@ -191,6 +191,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             PaymentResponse response = new PaymentResponse();
             response.setPaymentUrl(session.getUrl());
+            response.setClientSecret(session.getId());
             return response;
 
 

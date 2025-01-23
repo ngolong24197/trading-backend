@@ -9,13 +9,13 @@ public class ForgotPasswordRequest {
 
      private String sendTo;
      private String otp;
-     private VerificationType type;
+     private String type;
 
-    public VerificationType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(VerificationType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

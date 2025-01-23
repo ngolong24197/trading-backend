@@ -3,6 +3,8 @@ package com.DrakeN.trading.Service;
 import com.DrakeN.trading.Domain.VerificationType;
 import com.DrakeN.trading.Enitty.User;
 
+import java.util.List;
+
 public interface UserService {
 
     User findUserByEmail(String email) throws Exception;
@@ -11,6 +13,8 @@ public interface UserService {
     User enableTwoFactorAuthentication(VerificationType type, String sendTo, User user);
 
     User updatePassword(User user, String newPassword);
+
+    List<User> findAllUsers();
 
 
 }

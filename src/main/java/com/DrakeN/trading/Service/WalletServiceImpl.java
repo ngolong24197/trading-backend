@@ -8,6 +8,7 @@ import com.DrakeN.trading.Repository.WalletRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -30,6 +31,7 @@ public class WalletServiceImpl implements WalletService {
         if(wallet == null) {
             wallet = new Wallet();
             wallet.setUser(user);
+            walletRepository.save(wallet);
 
 
         }
@@ -95,5 +97,11 @@ public class WalletServiceImpl implements WalletService {
         walletRepository.save(wallet);
 
         return wallet;
+    }
+
+    @Override
+    public List<Wallet> getAllWallets() {
+        List<Wallet> wallets = walletRepository.findAll();
+        return wallets;
     }
 }

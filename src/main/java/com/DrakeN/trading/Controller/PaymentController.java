@@ -24,6 +24,8 @@ public class PaymentController {
     @Autowired
     private UserService userService;
 
+
+
     @PostMapping("/{paymentMethod}/amount/{amount}")
     public ResponseEntity<PaymentResponse> paymentHandler(@PathVariable PAYMENT_METHOD paymentMethod, @PathVariable Long amount, @RequestHeader("Authorization") String jwt, HttpServletRequest request)throws Exception {
         User user = userService.findUserProfileByJwt(jwt);
