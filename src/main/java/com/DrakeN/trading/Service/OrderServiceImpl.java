@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getOrderById(Long orderId) {
-        return orderRepository.findById(String.valueOf(orderId)).orElseThrow(()-> new RuntimeException("Order not found")   );
+        return orderRepository.findById(orderId).orElseThrow(()-> new RuntimeException("Order not found")   );
     }
 
     @Override

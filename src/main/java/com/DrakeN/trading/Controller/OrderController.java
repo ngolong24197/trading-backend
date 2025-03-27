@@ -33,7 +33,7 @@ public class OrderController {
 //    private WalletTransactionService walletTransactionService;
 
 
-    @PostMapping("/pay")
+    @PostMapping("/create")
     public ResponseEntity<Order> payOrderPayment(@RequestHeader("Authorization") String jwt, @RequestBody CreateOrderRequest request) throws Exception {
         User user = userService.findUserProfileByJwt(jwt);
         CryptoEntity coin = crytoEntityService.findById(request.getCoinId());
